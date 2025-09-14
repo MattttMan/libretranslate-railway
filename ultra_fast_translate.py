@@ -245,40 +245,34 @@ class UltraFastTranslator:
             return []
     
     def get_total_food_count(self) -> int:
-        """Get total number of foods by counting in batches"""
+        """Get total number of foods using Content-Range header"""
         try:
             url = f"{SUPABASE_URL}/rest/v1/foods"
             headers = {
                 "apikey": SUPABASE_ANON_KEY,
                 "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Prefer": "count=exact"
             }
             params = {
                 "select": "id",
-                "limit": "10000"
+                "limit": "1"
             }
             
-            total_count = 0
-            offset = 0
+            response = requests.get(url, headers=headers, params=params, timeout=DB_TIMEOUT)
             
-            while True:
-                params["offset"] = offset
-                response = requests.get(url, headers=headers, params=params, timeout=DB_TIMEOUT)
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    batch_count = len(data)
-                    total_count += batch_count
-                    
-                    # If we got less than 10000, we've reached the end
-                    if batch_count < 10000:
-                        break
-                    
-                    offset += 10000
+            if response.status_code in [200, 206]:
+                content_range = response.headers.get("Content-Range", "")
+                if "/" in content_range:
+                    total_count = int(content_range.split("/")[-1])
+                    print(f"📊 Total foods in database: {total_count:,}")
+                    return total_count
                 else:
-                    break
-            
-            return total_count
+                    print(f"⚠️ Could not parse Content-Range: {content_range}")
+                    return 0
+            else:
+                print(f"❌ Error getting count: {response.status_code}")
+                return 0
         except Exception as e:
             print(f"⚠️ Error getting total count: {e}")
             return 0
