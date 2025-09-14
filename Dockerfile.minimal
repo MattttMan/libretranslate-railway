@@ -1,0 +1,23 @@
+# Use a minimal Python base image
+FROM python:3.9-slim
+
+# Install only essential dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install LibreTranslate with minimal language models
+RUN pip install --no-cache-dir libretranslate
+
+# Set environment variables for minimal setup
+ENV LT_API_KEYS=false
+ENV LT_DISABLE_WEB_UI=true
+ENV LT_HOST=0.0.0.0
+ENV LT_PORT=8080
+ENV LT_LOAD_ONLY=en,es,fr,de,it,pt,zh,ja,ko,ar
+
+# Expose port
+EXPOSE 8080
+
+# Start LibreTranslate with minimal languages
+CMD ["libretranslate", "--host", "0.0.0.0", "--port", "8080", "--disable-web-ui", "--api-keys", "false"]
