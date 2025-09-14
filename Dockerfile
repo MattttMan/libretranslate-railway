@@ -11,7 +11,7 @@ RUN apk add --no-cache \
 RUN pip install --no-cache-dir \
     fastapi \
     uvicorn \
-    googletrans==4.0.0rc1
+    requests
 
 # Create app directory
 WORKDIR /app
