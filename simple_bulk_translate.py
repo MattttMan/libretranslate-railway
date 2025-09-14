@@ -13,7 +13,7 @@ SUPABASE_URL = "https://jklyfpokjtqyrkkeehho.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImprbHlmcG9ranRxeXJra2VlaGhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNTA3ODgsImV4cCI6MjA3MjcyNjc4OH0.s5RtIsu2FSWlt0W8spVZ-IvxdOScfzeR44IGYEoMbjk"
 
 # Languages to translate to
-LANGUAGES = ['es', 'fr', 'de', 'it', 'pt', 'zh', 'ja', 'ko', 'ar']
+LANGUAGES = ['es', 'de', 'it']
 
 def translate_text(text, target_lang):
     """Translate text using Railway API"""
