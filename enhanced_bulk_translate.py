@@ -249,15 +249,29 @@ class EnhancedBulkTranslator:
                 "limit": "10000"
             }
             
-            response = requests.get(url, headers=headers, params=params, timeout=DB_TIMEOUT)
-            if response.status_code == 200:
-                data = response.json()
-                if len(data) == 10000:
-                    return 10000  # We'll handle pagination
+            total_count = 0
+            offset = 0
+            
+            while True:
+                params["offset"] = offset
+                response = requests.get(url, headers=headers, params=params, timeout=DB_TIMEOUT)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    batch_count = len(data)
+                    total_count += batch_count
+                    
+                    # If we got less than 10000, we've reached the end
+                    if batch_count < 10000:
+                        break
+                    
+                    offset += 10000
                 else:
-                    return len(data)
-            return 0
+                    break
+            
+            return total_count
         except Exception as e:
+            print(f"⚠️ Error getting total count: {e}")
             return 0
     
     def print_detailed_progress(self):
